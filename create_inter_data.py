@@ -37,8 +37,8 @@ def main(base_path='data', type_c='agnostic'):
                 for block in data[conversation]:
                     if type_c == 'agnostic':
                         if block['speaker'] == spk_a:
-                            data_src.append(block['target'])
-                            data_tgt.append(block['source'])
+                            data_src.append(block['source'])
+                            data_tgt.append(block['target'])
                         elif block['speaker'] == spk_b:
                             data_src.append(block['source'])
                             data_tgt.append(block['target'])
@@ -49,14 +49,17 @@ def main(base_path='data', type_c='agnostic'):
                   
             os.makedirs(inter_path / type_c / dataset, exist_ok=True)
             
-            with open(inter_path / type_c / dataset / f'{partition}.{lang_src}', 'w') as f:
+            with open(inter_path / type_c / dataset / f'{partition}.input', 'w') as f:
                 for line in data_src:
                     if len(line):
                         print(line, file=f)
                     
-            with open(inter_path / type_c / dataset / f'{partition}.{lant_tgt}', 'w') as f:
+            with open(inter_path / type_c / dataset / f'{partition}.output', 'w') as f:
                 for line in data_tgt:
                     if len(line):
                         print(line, file=f)
+                        
+        with open(raw_path / dataset / f'{partition}.json') as f:
+            data = json.load(f)
                     
 main()

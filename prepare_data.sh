@@ -11,45 +11,45 @@ BPEROOT=subword-nmt/subword_nmt
 BPE_TOKENS=10000
 
 prep=data/inter/agnostic/pass
-tmp=$prep/tmp
 
-mkdir -p $tmp
 for corpus in "openSub_ende" "openSub_enfr" "openSub_enru" "openSub_enes"; do
     orig=data/inter/agnostic/$corpus
     src=${corpus: -4:-2}
     tgt=${corpus: -2}   
-    
+    tmp=$prep/$corpus
+
+    mkdir -p $tmp    
     echo "pre-processing train, test and dev data..."
-    for l in $src $tgt; do
+    for l in "input" "output"; do
         for partition in "train" "dev" "test"; do
             f=$partition.$l
 
             cat $orig/$f | \
                 perl $NORM_PUNC $l | \
-                perl $TOKENIZER -threads 8 -l $l > $tmp/$f
+                perl $TOKENIZER -threads 8 -l $l > $prep/$f
             echo ""
         done
     done
 
-    TRAIN=$tmp/train.all
-    BPE_CODE=$prep/code
+    TRAIN=$prep/train.all
+    BPE_CODE=$tmp/code
     rm -f $TRAIN
-    for l in $src $tgt; do
-        cat $tmp/train.$l >> $TRAIN
+    for l in "input" "output"; do
+        cat $prep/train.$l >> $TRAIN
     done
 
     echo "learn_bpe.py on ${TRAIN}..."
     python $BPEROOT/learn_bpe.py -s $BPE_TOKENS < $TRAIN > $BPE_CODE
 
-    for L in $src $tgt; do
+    for L in "input" "output"; do
         for f in train.$L dev.$L test.$L; do
             echo "apply_bpe.py to ${f}..."
-            python $BPEROOT/apply_bpe.py -c $BPE_CODE < $tmp/$f > $prep/$f
+            python $BPEROOT/apply_bpe.py -c $BPE_CODE < $prep/$f > $tmp/$f
         done
     done
 
     TEXT=data/inter/agnostic/pass
-    fairseq-preprocess --source-lang $src --target-lang $tgt \
+    fairseq-preprocess --source-lang "input" --target-lang "output" \
         --trainpref $TEXT/train --validpref $TEXT/dev --testpref $TEXT/test \
         --destdir data/preprocessed/$corpus \
         --workers 20
