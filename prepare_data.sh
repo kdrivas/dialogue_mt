@@ -50,7 +50,7 @@ for corpus in "openSub_ende" "openSub_enfr" "openSub_enru" "openSub_enes"; do
 
     TEXT=data/inter/agnostic/pass
     fairseq-preprocess --source-lang "input" --target-lang "output" \
-        --trainpref $TEXT/train --validpref $TEXT/dev --testpref $TEXT/test \
+        --trainpref $tmp/train --validpref $tmp/dev --testpref $tmp/test \
         --destdir data/preprocessed/$corpus \
         --workers 20
 done
