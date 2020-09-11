@@ -8,7 +8,7 @@ TOKENIZER=$SCRIPTS/tokenizer/tokenizer.perl
 CLEAN=$SCRIPTS/training/clean-corpus-n.perl
 NORM_PUNC=$SCRIPTS/tokenizer/normalize-punctuation.perl
 BPEROOT=subword-nmt/subword_nmt
-BPE_TOKENS=10000
+BPE_TOKENS=20000
 
 prep=data/inter/agnostic/pass
 
